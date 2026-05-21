@@ -1,20 +1,14 @@
+const { Router } = require('express');
+const { PrismaClient } = require('../../prisma/generated/prisma');
 const { verifyToken } = require('../../middleware/authMiddleware.js');
-const { setupAuthRoutes } = require('./auth.routes.js');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const express = require('express'); 
-const { PrismaClient } = require('../../prisma/generated/prisma');
-const cors = require('cors'); 
-const app = express();
+const router = Router();
 const prisma = new PrismaClient();
 
-app.use(express.json());
-app.use(cors());
-
-setupAuthRoutes(app, prisma, bcrypt, saltRounds, jwt);
-
-app.get('/api/todos', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { userId } = req.query;
     const todo = await prisma.toDos.findMany({
@@ -30,7 +24,7 @@ app.get('/api/todos', async (req, res) => {
   }
 });
 
-app.post('/api/todos', verifyToken, async (req, res) => {   
+router.post('/', verifyToken, async (req, res) => {   
   try {
     const { todo } = req.body;                 
     if (!todo) {                              
@@ -50,7 +44,7 @@ app.post('/api/todos', verifyToken, async (req, res) => {
   }
 });
 
-app.put('/api/todos/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { id: _, posted_at, updated_at, ...updateTodo } = req.body;
@@ -66,7 +60,7 @@ app.put('/api/todos/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/todos/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.toDos.delete({               
@@ -79,8 +73,4 @@ app.delete('/api/todos/:id', async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log('Server running on http://localhost:5000');
-});
-
-module.exports = {app}
+module.exports  = router;

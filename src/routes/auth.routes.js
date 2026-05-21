@@ -1,7 +1,16 @@
+const { PrismaClient } = require('../../prisma/generated/prisma');
 
-function setupAuthRoutes(app, prisma, bcrypt, saltRounds, jwt){
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-app.post('/api/auth/signup', async (req, res) => {
+const {Router} = require('express');
+
+
+const saltRounds = 10;
+const router = Router();
+const prisma = new PrismaClient();
+
+router.post('signup', async (req, res) => {
     try{
         const { email, password, name } = req.body;
 if(!email) return res.status(400).json({ error: 'Email is required'});
@@ -33,7 +42,7 @@ const register = await prisma.auth.create({
     }
 });
 
-app.post ('/api/auth/login', async (req, res) => {
+router.post ('login', async (req, res) => {
 try {
     const { email, password } = req.body;
     const userDetail = await prisma.auth.findUnique({
@@ -57,5 +66,5 @@ try {
     res.status(500).json({error: 'Failed to fetch user data'});
 }
 });
-}
-module.exports = { setupAuthRoutes };
+
+module.exports = router
