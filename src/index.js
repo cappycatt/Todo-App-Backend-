@@ -12,7 +12,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use(todoRoutes);
+app.use("/api/todos", todoRoutes);
 
 app.listen(5000, () => {
   console.log('Server running on http://localhost:5000');
