@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  PENDING
+  COMPLETED
+}
+
+model Auth {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  todos      ToDos[]
+}
+
+model ToDos {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  todo       String
+  userId     String   @db.ObjectId
+  user       Auth     @relation(fields: [userId], references: [id])
+  posted_at  DateTime @default(now())
+  updated_at DateTime @default(now())
+  status     Status   @default(PENDING)
+}
