@@ -10,7 +10,7 @@ const saltRounds = 10;
 const router = Router();
 const prisma = new PrismaClient();
 
-router.post('signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
     try{
         const { email, password, name } = req.body;
 if(!email) return res.status(400).json({ error: 'Email is required'});
@@ -42,7 +42,7 @@ const register = await prisma.auth.create({
     }
 });
 
-router.post ('login', async (req, res) => {
+router.post ('/login', async (req, res) => {
 try {
     const { email, password } = req.body;
     const userDetail = await prisma.auth.findUnique({
